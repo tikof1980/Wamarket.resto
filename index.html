@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WAMARKET.RESTO</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f2f5;
+            color: #333;
+        }
+
+        .screen { display: none; }
+        .screen.active { display: block; }
+
+        .login-box {
+            max-width: 400px;
+            margin: 80px auto;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .logo { font-size: 60px; margin-bottom: 10px; }
+        .login-box h1 { color: #e65c00; font-size: 24px; margin-bottom: 5px; }
+        .login-box p { color: #888; margin-bottom: 20px; }
+
+        .login-box input {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 2px solid #eee;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .login-box button {
+            width: 100%;
+            padding: 12px;
+            background: #e65c00;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .error { color: red; margin-top: 10px; }
+
+        .header {
+            background: #e65c00;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-small {
+            background: white;
+            color: #e65c00;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: white;
+            overflow-x: auto;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .tab {
+            padding: 12px 20px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            white-space: nowrap;
+            font-size: 14px;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab.active {
+            color: #e65c00;
+            border-bottom: 3px solid #e65c00;
+            font-weight: bold;
+        }
+
+        .tab-content { display: none; padding: 20px; }
+        .tab-content.active { display: block; }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .btn-add {
+            background: #e65c00;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .btn-green {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            margin: 5px 0;
+            font-size: 16px;
+        }
+
+        .btn-red {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            margin: 5px 0;
+            font-size: 16px;
+        }
+
+        .commande-card {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-left: 4px solid #e65c00;
+        }
+
+        .commande-card h4 { color: #e65c00; margin-bottom: 5px; }
+
+        .commande-actions { margin-top: 10px; display: flex; gap: 8px; }
+
+        .commande-actions button {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .plat-card {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .plat-card button {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .tables-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .table-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            cursor: pointer;
+        }
+
+        .table-card.libre { border: 3px solid #28a745; }
+        .table-card.occupee { border: 3px solid #dc3545; background: #fff5f5; }
+
+        .caisse-total {
+            background: #e65c00;
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .caisse-total h2 { font-size: 36px; }
+
+        .caisse-card {
+            background: white;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .stat-card h2 { color: #e65c00; font-size: 28px; margin-top: 8px; }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background: white;
+            margin: 30px auto;
+            padding: 25px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .modal-content h3 { margin-bottom: 15px; color: #e65c00; }
+
+        .modal-content input,
+        .modal-content select {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 2px solid #eee;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        .modal-total {
+            background: #f0f2f5;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 10px 0;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        .menu-item-choix {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .menu-item-choix .controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .menu-item-choix button {
+            width: 28px;
+            height: 28px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 16px;
+            background: #e65c00;
+            color: white;
+        }
+
+        .badge {
+            background: #28a745;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ÉCRAN LOGIN -->
+<div id="loginScreen" class="screen active">
+    <div class="login-box">
+        <div class="logo">🍽️</div>
+        <h1>WAMARKET.RESTO</h1>
+        <p>Gestion de Restaurant</p>
+        <input type="text" id="username" placeholder="Nom d'utilisateur">
+        <input type="password" id="password" placeholder="Mot de passe">
+        <button onclick="login()">SE CONNECTER</button>
+        <p id="loginError" class="error"></p>
+    </div>
+</div>
+
+<!-- TABLEAU DE BORD -->
+<div id="dashboard" class="screen">
+    <div class="header">
+        <h2>🍽️ WAMARKET.RESTO</h2>
+        <div>
+            <span id="userName"></span>
+            <button onclick="logout()" class="btn-small">Déconnexion</button>
+        </div>
+    </div>
+
+    <div class="nav-tabs">
+        <button class="tab active" onclick="showTab('commandes', this)">📋 Commandes</button>
+        <button class="tab" onclick="showTab('menu', this)">🍕 Menu</button>
+        <button class="tab" onclick="showTab('tables', this)">🪑 Tables</button>
+        <button class="tab" onclick="showTab('caisse', this)">💰 Caisse</button>
+        <button class="tab" onclick="showTab('stats', this)">📊 Stats</button>
+    </div>
+
+    <div id="tab-commandes" class="tab-content active">
+        <div class="section-header">
+            <h3>📋 Commandes en cours</h3>
+            <button onclick="nouvelleCommande()" class="btn-add">+ Nouvelle</button>
+        </div>
+        <div id="listeCommandes"></div>
+    </div>
+
+    <div id="tab-menu" class="tab-content">
+        <div class="section-header">
+            <h3>🍕 Gestion du Menu</h3>
+            <button onclick="ajouterPlat()" class="btn-add">+ Ajouter Plat</button>
+        </div>
+        <div id="listeMenu"></div>
+    </div>
+
+    <div id="tab-tables" class="tab-content">
+        <div class="section-header">
+            <h3>🪑 État des Tables</h3>
+        </div>
+        <div id="listeTables" class="tables-grid"></div>
+    </div>
+
+    <div id="tab-caisse" class="tab-content">
+        <div class="section-header">
+            <h3>💰 Caisse du jour</h3>
+        </div>
+        <div class="caisse-total">
+            <p>Total du jour</p>
+            <h2 id="totalJour">0 FCFA</h2>
+        </div>
+        <div id="listeCaisse"></div>
+    </div>
+
+    <div id="tab-stats" class="tab-content">
+        <h3>📊 Statistiques</h3>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <p>🍽️ Commandes</p>
+                <h2 id="statCommandes">0</h2>
+            </div>
+            <div class="stat-card">
+                <p>💰 Recette du jour</p>
+                <h2 id="statRecette">0 FCFA</h2>
+            </div>
+            <div class="stat-card">
+                <p>🪑 Tables occupées</p>
+                <h2 id="statTables">0</h2>
+            </div>
+            <div class="stat-card">
+                <p>🍕 Plats au menu</p>
+                <h2 id="statPlats">0</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL NOUVELLE COMMANDE -->
+<div id="modalCommande" class="modal">
+    <div class="modal-content">
+        <h3>📋 Nouvelle Commande</h3>
+        <select id="tableCommande">
+            <option value="">Choisir une table</option>
+        </select>
+        <div id="menuChoix"></div>
+        <div class="modal-total">
+            <strong>Total : <span id="totalCommande">0</span> FCFA</strong>
+        </div>
+        <button onclick="validerCommande()" class="btn-green">✅ Valider la commande</button>
+        <button onclick="fermerModal('modalCommande')" class="btn-red">❌ Annuler</button>
+    </div>
+</div>
+
+<!-- MODAL AJOUTER PLAT -->
+<div id="modalPlat" class="modal">
+    <div class="modal-content">
+        <h3>🍕 Ajouter un Plat</h3>
+        <input type="text" id="nomPlat" placeholder="Nom du plat">
+        <input type="number" id="prixPlat" placeholder="Prix en FCFA">
+        <select id="categoriePlat">
+            <option value="Entrée">Entrée</option>
+            <option value="Plat principal">Plat principal</option>
+            <option value="Dessert">Dessert</option>
+            <option value="Boisson">Boisson</option>
+        </select>
+        <button onclick="validerPlat()" class="btn-green">✅ Ajouter au menu</button>
+        <button onclick="fermerModal('modalPlat')" class="btn-red">❌ Annuler</button>
+    </div>
+</div>
+
+<script>
+let data = {
+    users: [
+        { username: "admin", password: "admin123", role: "Gérant" },
+        { username: "serveur", password: "1234", role: "Serveur" }
+    ],
+    menu: [
+        { id: 1, nom: "Riz sauce graine", prix: 1500, categorie: "Plat principal" },
+        { id: 2, nom: "Attiéké poisson", prix: 2000, categorie: "Plat principal" },
+        { id: 3, nom: "Jus de gingembre", prix: 500, categorie: "Boisson" },
+        { id: 4, nom: "Salade de fruits", prix: 800, categorie: "Dessert" },
+        { id: 5, nom: "Alloco", prix: 500, categorie: "Entrée" }
+    ],
+    tables: [
+        { id: 1, nom: "Table 1", statut: "libre" },
+        { id: 2, nom: "Table 2", statut: "libre" },
+        { id: 3, nom: "Table 3", statut: "libre" },
+        { id: 4, nom: "Table 4", statut: "libre" },
+        { id: 5, nom: "Table 5", statut: "libre" },
+        { id: 6, nom: "Table 6", statut: "libre" },
+        { id: 7, nom: "Terrasse 1", statut: "libre" },
+        { id: 8, nom: "Terrasse 2", statut: "libre" },
+        { id: 9, nom: "VIP", statut: "libre" }
+    ],
+    commandes: [],
+    caisse: [],
+    currentUser: null,
+    commandeEnCours: {}
+};
+
+function login() {
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    const user = data.users.find(u => u.username === username && u.password === password);
+    if (user) {
+        data.currentUser = user;
+        document.getElementById('userName').textContent = user.role + " : " + user.username;
+        showScreen('dashboard');
+        chargerTout();
+    } else {
+        document.getElementById('loginError').textContent = "❌ Identifiants incorrects !";
+    }
+}
+
+function logout() {
+    data.currentUser = null;
+    showScreen('loginScreen');
+}
+
+function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+}
+
+function showTab(tabName, btn) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('tab-' + tabName).classList.add('active');
+    btn.classList.add('active');
+    if (tabName === 'stats') mettreAJourStats();
+}
+
+function chargerTout() {
+    afficherCommandes();
+    afficherMenu();
+    afficherTables();
+    afficherCaisse();
+    mettreAJourStats();
+}
+
+function nouvelleCommande() {
+    data.commandeEnCours = {};
+    const select = document.getElementById('tableCommande');
+    select.innerHTML = '<option value="">Choisir une table</option>';
+    data.tables.forEach(t => {
+        const opt = document.createElement('option');
+        opt.value = t.id;
+        opt.textContent = t.nom + (t.statut === 'occupee' ? ' 🔴' : ' 🟢');
+        select.appendChild(opt);
+    });
+
+    const menuChoix = document.getElementById('menuChoix');
+    menuChoix.innerHTML = '<p style="margin:10px 0;font-weight:bold;">Choisir les plats :</p>';
+    data.menu.forEach(plat => {
+        const div = document.createElement('div');
+        div.className = 'menu-item-choix';
+        div.innerHTML = `
+            <div>
+                <strong>${plat.nom}</strong><br>
+                <small style="color:#e65c00">${plat.prix} FCFA</small>
+            </div>
+            <div class="controls">
+                <button onclick="changerQte(${plat.id}, -1)">−</button>
+                <span id="qte-${plat.id}">0</span>
+                <button onclick="changerQte(${plat.id}, 1)">+</button>
+            </div>
+        `;
+        menuChoix.appendChild(div);
+    });
+
+    document.getElementById('totalCommande').textContent = '0';
+    ouvrirModal('modalCommande');
+}
+
+function changerQte(platId, delta) {
+    if (!data.commandeEnCours[platId]) data.commandeEnCours[platId] = 0;
+    data.commandeEnCours[platId] = Math.max(0, data.commandeEnCours[platId] + delta);
+    document.getElementById('qte-' + platId).textContent = data.commandeEnCours[platId];
+    calculerTotal();
+}
+
+function calculerTotal() {
+    let total = 0;
+    for (let platId in data.commandeEnCours) {
+        const qte = data.commandeEnCours[platId];
+        const plat = data.menu.find(p => p.id == platId);
+        if (plat && qte > 0) total += plat.prix * qte;
+    }
+    document.getElementById('totalCommande').textContent = total.toLocaleString();
+    return total;
+}
+
+function validerCommande() {
+    const tableId = document.getElementById('tableCommande').value;
+    if (!tableId) { alert('⚠️ Choisissez une table !'); return; }
+
+    const items = [];
+    for (let platId in data.commandeEnCours) {
+        const qte = data.commandeEnCours[platId];
+        const plat = data.menu.find(p => p.id == platId);
+        if (plat && qte > 0) items.push({ nom: plat.nom, prix: plat.prix, qte: qte });
+    }
+
+    if (items.length === 0) { alert('⚠️ Ajoutez au moins un plat !'); return; }
+
+    const total = calculerTotal();
+    const table = data.tables.find(t => t.id == tableId);
+
+    data.commandes.push({
+        id: Date.now(),
+        table: table.nom,
+        tableId: parseInt(tableId),
+        items: items,
+        total: total,
+        statut: 'en cours',
+        heure: new Date().toLocaleTimeString()
+    });
+
+    table.statut = 'occupee';
+    fermerModal('modalCommande');
+    afficherCommandes();
+    afficherTables();
+    alert('✅ Commande enregistrée pour ' + table.nom + ' !');
+}
+
+function afficherCommandes() {
+    const liste = document.getElementById('listeCommandes');
+    const enCours = data.commandes.filter(c => c.statut !== 'payée');
+
+    if (enCours.length === 0) {
+        liste.innerHTML = '<p style="text-align:center;color:#888;margin-top:30px;">Aucune commande en cours</p>';
+        return;
+    }
+
+    liste.innerHTML = '';
+    enCours.forEach(cmd => {
+        const div = document.createElement('div');
+        div.className = 'commande-card';
+        const itemsText = cmd.items.map(i => `${i.qte}x ${i.nom}`).join(', ');
+        div.innerHTML = `
+            <h4>🪑 ${cmd.table} <span class="badge">${cmd.statut}</span></h4>
+            <p>⏰ ${cmd.heure}</p>
+            <p>🍽️ ${itemsText}</p>
+            <p><strong>💰 ${cmd.total.toLocaleString()} FCFA</strong></p>
+            <div class="commande-actions">
+                <button onclick="encaisser(${cmd.id})" style="background:#28a745;color:white">💰 Encaisser</button>
+                <button onclick="supprimerCommande(${cmd.id})" style="background:#dc3545;color:white">🗑️ Annuler</button>
+            </div>
+        `;
+        liste.appendChild(div);
+    });
+}
+
+function encaisser(cmdId) {
+    const cmd = data.commandes.find(c => c.id === cmdId);
+    if (!cmd) return;
+    if (confirm(`💰 Encaisser ${cmd.total.toLocaleString()} FCFA pour ${cmd.table} ?`)) {
+        cmd.statut = 'payée';
+        const table = data.tables.find(t => t.id == cmd.tableId);
+        if (table) table.statut = 'libre';
+        data.caisse.push({
+            table: cmd.table,
+            total: cmd.total,
+            heure: new Date().toLocaleTimeString()
+        });
+        afficherCommandes();
+        afficherTables();
+        afficherCaisse();
+        mettreAJourStats();
+        alert('✅ Paiement enregistré ! ' + cmd.total.toLocaleString() + ' FCFA');
+    }
+}
+
+function supprimerCommande(cmdId) {
+    if (confirm('❌ Annuler cette commande ?')) {
+        const cmd = data.commandes.find(c => c.id === cmdId);
+        if (cmd) {
+            const table = data.tables.find(t => t.id == cmd.tableId);
+            if (table) table.statut = 'libre';
+        }
+        data.commandes = data.commandes.filter(c => c.id !== cmdId);
+        afficherCommandes();
+        afficherTables();
+    }
+}
+
+function afficherMenu() {
+    const liste = document.getElementById('listeMenu');
+    if (data.menu.length === 0) {
+        liste.innerHTML = '<p style="text-align:center;color:#888;margin-top:30px;">Aucun plat dans le menu</p>';
+        return;
+    }
+    liste.innerHTML = '';
+    data.menu.forEach(plat => {
+        const div = document.createElement('div');
+        div.className = 'plat-card';
+        div.innerHTML = `
+            <div>
+                <strong>${plat.nom}</strong>
+                <p style="color:#888;font-size:13px">${plat.categorie}</p>
+                <p style="color:#e65c00;font-weight:bold">${plat.prix.toLocaleString()} FCFA</p>
+            </div>
+            <button onclick="supprimerPlat(${plat.id})">🗑️ Supprimer</button>
+        `;
+        liste.appendChild(div);
+    });
+}
+
+function ajouterPlat() {
+    document.getElementById('nomPlat').value = '';
+    document.getElementById('prixPlat').value = '';
+    ouvrirModal('modalPlat');
+}
+
+function validerPlat() {
+    const nom = document.getElementById('nomPlat').value.trim();
+    const prix = parseInt(document.getElementById('prixPlat').value);
+    const categorie = document.getElementById('categoriePlat').value;
+
+    if (!nom) { alert('⚠️ Entrez le nom du plat !'); return; }
+    if (!prix || prix <= 0) { alert('⚠️ Entrez un prix valide !'); return; }
+
+    data.menu.push({ id: Date.now(), nom, prix, categorie });
+    fermerModal('modalPlat');
+    afficherMenu();
+    mettreAJourStats();
+    alert('✅ Plat ajouté : ' + nom);
+}
+
+function supprimerPlat(id) {
+    if (confirm('❌ Supprimer ce plat ?')) {
+        data.menu = data.menu.filter(p => p.id !== id);
+        afficherMenu();
+        mettreAJourStats();
+    }
+}
+
+function afficherTables() {
+    const liste = document.getElementById('listeTables');
+    liste.innerHTML = '';
+    data.tables.forEach(table => {
+        const div = document.createElement('div');
+        div.className = 'table-card ' + table.statut;
+        div.innerHTML = `
+            <div style="font-size:30px">${table.statut === 'libre' ? '🟢' : '🔴'}</div>
+            <strong>${table.nom}</strong>
+            <p style="font-size:12px;margin-top:5px">${table.statut === 'libre' ? 'Disponible' : 'Occupée'}</p>
+        `;
+        liste.appendChild(div);
+    });
+}
+
+function afficherCaisse() {
+    const liste = document.getElementById('listeCaisse');
+    const total = data.caisse.reduce((sum, c) => sum + c.total, 0);
+    document.getElementById('totalJour').textContent = total.toLocaleString() + ' FCFA';
+
+    if (data.caisse.length === 0) {
+        liste.innerHTML = '<p style="text-align:center;color:#888;margin-top:20px;">Aucune transaction aujourd\'hui</p>';
+        return;
+    }
+
+    liste.innerHTML = '';
+    data.caisse.slice().reverse().forEach(c => {
+        const div = document.createElement('div');
+        div.className = 'caisse-card';
+        div.innerHTML = `
+            <span>🪑 ${c.table} - ⏰ ${c.heure}</span>
+            <strong style="color:#28a745">${c.total.toLocaleString()} FCFA</strong>
+        `;
+        liste.appendChild(div);
+    });
+}
+
+function mettreAJourStats() {
+    const totalJour = data.caisse.reduce((sum, c) => sum + c.total, 0);
+    const tablesOccupees = data.tables.filter(t => t.statut === 'occupee').length;
+    document.getElementById('statCommandes').textContent = data.commandes.filter(c => c.statut === 'payée').length;
+    document.getElementById('statRecette').textContent = totalJour.toLocaleString() + ' FCFA';
+    document.getElementById('statTables').textContent = tablesOccupees;
+    document.getElementById('statPlats').textContent = data.menu.length;
+}
+
+function ouvrirModal(id) { document.getElementById(id).style.display = 'block'; }
+function fermerModal(id) { document.getElementById(id).style.display = 'none'; }
+
+document.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') login();
+});
+</script>
+</body>
+</html>
