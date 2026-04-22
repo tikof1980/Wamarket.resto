@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WAMARKET.RESTO - Gestion Professionnelle</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
+
+        :root {
+            --primary: #8B0000;
+            --primary-dark: #5C0000;
+            --gold: #D4AF37;
+            --gold-light: #F4E5A1;
+            --cream: #FFF8F0;
+            --dark: #2C1810;
+            --success: #2E7D32;
+            --danger: #C62828;
+        }
+
+        body {
+            background: linear-gradient(135deg, #FFF8F0 0%, #F4E5A1 100%);
+            color: var(--dark);
+            min-height: 100vh;
+        }
+
+        .screen { display: none; }
+        .screen.active { display: block; }
+
+        /* LOGIN */
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #8B0000 0%, #2C1810 100%);
+            padding: 20px;
+        }
+
+        .login-box {
+            max-width: 420px;
+            width: 100%;
+            background: white;
+            padding: 45px 35px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            text-align: center;
+            border-top: 5px solid var(--gold);
+        }
+
+        .logo {
+            font-size: 70px;
+            margin-bottom: 10px;
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.2));
+        }
+
+        .login-box h1 {
+            color: var(--primary);
+            font-size: 28px;
+            margin-bottom: 5px;
+            letter-spacing: 2px;
+        }
+
+        .login-box .subtitle {
+            color: var(--gold);
+            font-weight: bold;
+            letter-spacing: 3px;
+            font-size: 12px;
+            margin-bottom: 25px;
+        }
+
+        .login-box input {
+            width: 100%;
+            padding: 14px;
+            margin: 8px 0;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .login-box input:focus {
+            border-color: var(--gold);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(212,175,55,0.2);
+        }
+
+        .login-box button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            letter-spacing: 1px;
+            transition: transform 0.2s;
+        }
+
+        .login-box button:hover { transform: translateY(-2px); }
+
+        .error { color: var(--danger); margin-top: 12px; font-weight: bold; }
+
+        .info-box {
+            background: var(--cream);
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #666;
+            text-align: left;
+        }
+
+        /* HEADER */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 18px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            border-bottom: 3px solid var(--gold);
+        }
+
+        .header h2 { font-size: 20px; letter-spacing: 1px; }
+        .header h2 span { color: var(--gold); }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+        }
+
+        .btn-small {
+            background: var(--gold);
+            color: var(--dark);
+            border: none;
+            padding: 7px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .btn-small:hover { background: var(--gold-light); }
+
+        /* NOTIFICATION */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, var(--success) 0%, #1B5E20 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            z-index: 9999;
+            display: none;
+            animation: slideIn 0.4s ease-out;
+            border-left: 5px solid var(--gold);
+        }
+
+        .notification.show { display: flex; align-items: center; gap: 10px; }
+
+        @keyframes slideIn {
+            from { transform: translateX(400px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* NAV TABS */
+        .nav-tabs {
+            display: flex;
+            background: white;
+            overflow-x: auto;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 0 10px;
+        }
+
+        .tab {
+            padding: 15px 22px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            white-space: nowrap;
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab:hover { color: var(--primary); background: var(--cream); }
+
+        .tab.active {
+            color: var(--primary);
+            border-bottom: 3px solid var(--gold);
+            background: var(--cream);
+        }
+
+        .tab-content { display: none; padding: 25px; max-width: 1200px; margin: 0 auto; }
+        .tab-content.active { display: block; }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--gold);
+        }
+
+        .section-header h3 {
+            color: var(--primary);
+            font-size: 22px;
+        }
+
+        .btn-add {
+            background: linear-gradient(135deg, var(--gold) 0%, #B8961F 100%);
+            color: var(--dark);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 3px 10px rgba(212,175,55,0.4);
+            transition: transform 0.2s;
+        }
+
+        .btn-add:hover { transform: translateY(-2px); }
+
+        .btn-green {
+            background: linear-gradient(135deg, var(--success) 0%, #1B5E20 100%);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            margin: 5px 0;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .btn-red {
+            background: linear-gradient(135deg, var(--danger) 0%, #8B0000 100%);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            margin: 5px 0;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        /* CATEGORIES MENU */
+        .categorie-section {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .categorie-title {
+            color: var(--primary);
+            font-size: 18px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px dashed var(--gold);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 15px;
+        }
+
+        .plat-card {
+            background: var(--cream);
+            border-radius: 12px;
+            padding: 15px;
+            border-left: 4px solid var(--gold);
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .plat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        .plat-emoji { font-size: 40px; margin-bottom: 8px; }
+
+        .plat-nom {
+            font-weight: bold;
+            color: var(--dark);
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .plat-prix {
+            color: var(--primary);
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .plat-actions {
+            margin-top: 10px;
+            display: flex;
+            gap: 5px;
+        }
+
+        .btn-delete {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            flex: 1;
+        }
+
+        /* COMMANDES */
+        .commande-card {
+            background: white;
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 12px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+            border-left: 5px solid var(--primary);
+        }
+
+        .commande-card h4 {
+            color: var(--primary);
+            margin-bottom: 8px;
+            font-size: 17px;
+        }
+
+        .badge {
+            background: var(--gold);
+            color: var(--dark);
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            margin-left: 8px;
+            font-weight: bold;
+        }
+
+        .commande-actions {
+            margin-top: 12px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .commande-actions button {
+            padding: 8px 14px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: bold;
+            flex: 1;
+        }
+
+        /* TABLES */
+        .tables-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 15px;
+        }
+
+        .table-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px 15px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+        }
+
+        .table-card.libre { border: 3px solid var(--success); }
+        .table-card.occupee {
+            border: 3px solid var(--danger);
+            background: linear-gradient(135deg, #FFEBEE 0%, white 100%);
+        }
+
+        .table-card:hover { transform: scale(1.05); }
+
+        .table-icon { font-size: 35px; margin-bottom: 8px; }
+
+        .table-card strong { color: var(--primary); font-size: 15px; }
+
+        /* CAISSE */
+        .caisse-total {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 35px;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(139,0,0,0.3);
+            border: 3px solid var(--gold);
+        }
+
+        .caisse-total p { font-size: 14px; letter-spacing: 2px; color: var(--gold); }
+        .caisse-total h2 { font-size: 42px; margin-top: 10px; }
+
+        .caisse-card {
+            background: white;
+            padding: 14px 18px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border-left: 4px solid var(--success);
+        }
+
+        /* STATS */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 18px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            border-top: 4px solid var(--gold);
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover { transform: translateY(-5px); }
+        .stat-card p { color: #666; font-size: 14px; }
+        .stat-card h2 { color: var(--primary); font-size: 32px; margin-top: 10px; }
+
+        /* MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(44,24,16,0.8);
+            z-index: 1000;
+            overflow-y: auto;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: white;
+            margin: 30px auto;
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 520px;
+            width: 90%;
+            border-top: 5px solid var(--gold);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+        }
+
+        .modal-content h3 {
+            margin-bottom: 20px;
+            color: var(--primary);
+            font-size: 22px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--gold);
+        }
+
+        .modal-content input,
+        .modal-content select {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 2px solid #eee;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        .modal-content input:focus,
+        .modal-content select:focus {
+            border-color: var(--gold);
+            outline: none;
+        }
+
+        .modal-total {
+            background: linear-gradient(135deg, var(--cream) 0%, var(--gold-light) 100%);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            text-align: center;
+            font-size: 20px;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .menu-item-choix {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .menu-item-choix .controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .menu-item-choix button {
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            background: var(--primary);
+            color: white;
+            font-weight: bold;
+        }
+
+        .menu-item-choix span {
+            min-width: 25px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #888;
+        }
+
+        .empty-state .icon { font-size: 50px; margin-bottom: 10px; }
+
+        @media (max-width: 600px) {
+            .tab { padding: 12px 15px; font-size: 13px; }
+            .menu-grid { grid-template-columns: repeat(2, 1fr); }
+            .tables-grid { grid-template-columns: repeat(3, 1fr); }
+            .caisse-total h2 { font-size: 32px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NOTIFICATION -->
+<div id="notification" class="notification">
+    <span style="font-size:24px">✅</span>
+    <span id="notifText">Produit ajouté !</span>
+</div>
+
+<!-- LOGIN -->
+<div id="loginScreen" class="screen active">
+    <div class="login-container">
+        <div class="login-box">
+            <div class="logo">🍽️</div>
+            <h1>WAMARKET.RESTO</h1>
+            <div class="subtitle">★ GESTION PROFESSIONNELLE ★</div>
+            <input type="text" id="username" placeholder="👤 Nom d'utilisateur">
+            <input type="password" id="password" placeholder="🔒 Mot de passe">
+            <button onclick="login()">SE CONNECTER</button>
+            <p id="loginError" class="error"></p>
+            <div class="info-box">
+                <strong>🔐 Comptes de test :</strong><br>
+                • Admin : admin / admin123<br>
+                • Serveur : serveur / 1234
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard" class="screen">
+    <div class="header">
+        <h2>🍽️ WAMARKET<span>.RESTO</span></h2>
+        <div class="user-info">
+            <span id="userName"></span>
+            <button onclick="logout()" class="btn-small">Déconnexion</button>
+        </div>
+    </div>
+
+    <div class="nav-tabs">
+        <button class="tab active" onclick="showTab('commandes', this)">📋 Commandes</button>
+        <button class="tab" onclick="showTab('menu', this)">🍕 Menu</button>
+        <button class="tab" onclick="showTab('tables', this)">🪑 Tables</button>
+        <button class="tab" onclick="showTab('caisse', this)">💰 Caisse</button>
+        <button class="tab" onclick="showTab('stats', this)">📊 Stats</button>
+    </div>
+
+    <div id="tab-commandes" class="tab-content active">
+        <div class="section-header">
+            <h3>📋 Commandes en cours</h3>
+            <button onclick="nouvelleCommande()" class="btn-add">+ Nouvelle Commande</button>
+        </div>
+        <div id="listeCommandes"></div>
+    </div>
+
+    <div id="tab-menu" class="tab-content">
+        <div class="section-header">
+            <h3>🍕 Notre Menu</h3>
+            <button onclick="ajouterPlat()" class="btn-add">+ Ajouter un Plat</button>
+        </div>
+        <div id="listeMenu"></div>
+    </div>
+
+    <div id="tab-tables" class="tab-content">
+        <div class="section-header">
+            <h3>🪑 État des Tables</h3>
+        </div>
+        <div id="listeTables" class="tables-grid"></div>
+    </div>
+
+    <div id="tab-caisse" class="tab-content">
+        <div class="section-header">
+            <h3>💰 Caisse du jour</h3>
+        </div>
+        <div class="caisse-total">
+            <p>TOTAL DU JOUR</p>
+            <h2 id="totalJour">0 FCFA</h2>
+        </div>
+        <div id="listeCaisse"></div>
+    </div>
+
+    <div id="tab-stats" class="tab-content">
+        <div class="section-header">
+            <h3>📊 Statistiques</h3>
+        </div>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <p>🍽️ Commandes payées</p>
+                <h2 id="statCommandes">0</h2>
+            </div>
+            <div class="stat-card">
+                <p>💰 Recette du jour</p>
+                <h2 id="statRecette">0 FCFA</h2>
+            </div>
+            <div class="stat-card">
+                <p>🪑 Tables occupées</p>
+                <h2 id="statTables">0</h2>
+            </div>
+            <div class="stat-card">
+                <p>🍕 Plats au menu</p>
+                <h2 id="statPlats">0</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL COMMANDE -->
+<div id="modalCommande" class="modal">
+    <div class="modal-content">
+        <h3>📋 Nouvelle Commande</h3>
+        <select id="tableCommande">
+            <option value="">🪑 Choisir une table</option>
+        </select>
+        <div id="menuChoix" style="max-height:400px;overflow-y:auto;margin-top:10px"></div>
+        <div class="modal-total">
+            💰 Total : <span id="totalCommande">0</span> FCFA
+        </div>
+        <button onclick="validerCommande()" class="btn-green">✅ Valider la commande</button>
+        <button onclick="fermerModal('modalCommande')" class="btn-red">❌ Annuler</button>
+    </div>
+</div>
+
+<!-- MODAL AJOUTER PLAT -->
+<div id="modalPlat" class="modal">
+    <div class="modal-content">
+        <h3>🍕 Ajouter un Plat</h3>
+        <input type="text" id="nomPlat" placeholder="📝 Nom du plat">
+        <input type="number" id="prixPlat" placeholder="💰 Prix en FCFA">
+        <select id="categoriePlat">
+            <option value="Entrée">🥗 Entrée</option>
+            <option value="Plat principal">🍛 Plat principal</option>
+            <option value="Dessert">🍰 Dessert</option>
+            <option value="Boisson">🥤 Boisson</option>
+            <option value="Eau">💧 Eau</option>
+            <option value="Alcool">🍷 Alcool</option>
+        </select>
+        <input type="text" id="emojiPlat" placeholder="😋 Emoji (ex: 🍕)" maxlength="2">
+        <button onclick="validerPlat()" class="btn-green">✅ Ajouter au menu</button>
+        <button onclick="fermerModal('modalPlat')" class="btn-red">❌ Annuler</button>
+    </div>
+</div>
+
+<!-- MODAL CONFIRMATION ADMIN -->
+<div id="modalAdmin" class="modal">
+    <div class="modal-content">
+        <h3>🔒 Confirmation Administrateur</h3>
+        <p style="margin-bottom:15px;color:#666">Seul l'administrateur peut supprimer un produit. Entrez votre mot de passe :</p>
+        <input type="password" id="adminPassword" placeholder="🔑 Mot de passe admin">
+        <button onclick="confirmerSuppression()" class="btn-red">🗑️ Confirmer la suppression</button>
+        <button onclick="fermerModal('modalAdmin')" class="btn-green">❌ Annuler</button>
+    </div>
+</div>
+
+<script>
+// DONNÉES PAR DÉFAUT (uniquement au premier lancement)
+const menuDefault = [
+    // ENTRÉES
+    { id: 1, nom: "Salade César", prix: 2500, categorie: "Entrée", emoji: "🥗" },
+    { id: 2, nom: "Alloco", prix: 1000, categorie: "Entrée", emoji: "🍌" },
+    { id: 3, nom: "Brochettes", prix: 1500, categorie: "Entrée", emoji: "🍢" },
+    // PLATS PRINCIPAUX
+    { id: 4, nom: "Riz sauce graine", prix: 2000, categorie: "Plat principal", emoji: "🍛" },
+    { id: 5, nom: "Attiéké poisson", prix: 2500, categorie: "Plat principal", emoji: "🐟" },
+    { id: 6, nom: "Poulet braisé", prix: 3500, categorie: "Plat principal", emoji: "🍗" },
+    { id: 7, nom: "Foutou sauce", prix: 2500, categorie: "Plat principal", emoji: "🍲" },
+    { id: 8, nom: "Spaghetti bolognaise", prix: 3000, categorie: "Plat principal", emoji: "🍝" },
+    // DESSERTS
+    { id: 9, nom: "Salade de fruits", prix: 1000, categorie: "Dessert", emoji: "🍓" },
+    { id: 10, nom: "Gâteau chocolat", prix: 1500, categorie: "Dessert", emoji: "🍰" },
+    { id: 11, nom: "Glace vanille", prix: 1200, categorie: "Dessert", emoji: "🍨" },
+    // BOISSONS
+    { id: 12, nom: "Jus de gingembre", prix: 500, categorie: "Boisson", emoji: "🥤" },
+    { id: 13, nom: "Jus de bissap", prix: 500, categorie: "Boisson", emoji: "🧃" },
+    { id: 14, nom: "Coca-Cola", prix: 800, categorie: "Boisson", emoji: "🥤" },
+    { id: 15, nom: "Fanta", prix: 800, categorie: "Boisson", emoji: "🥤" },
+    // EAU
+    { id: 16, nom: "Eau minérale 0.5L", prix: 300, categorie: "Eau", emoji: "💧" },
+    { id: 17, nom: "Eau minérale 1.5L", prix: 700, categorie: "Eau", emoji: "💧" },
+    // ALCOOL
+    { id: 18, nom: "Bière Flag", prix: 1000, categorie: "Alcool", emoji: "🍺" },
+    { id: 19, nom: "Vin rouge (verre)", prix: 2000, categorie: "Alcool", emoji: "🍷" }
+];
+
+const tablesDefault = [
+    { id: 1, nom: "Table 1", statut: "libre" },
+    { id: 2, nom: "Table 2", statut: "libre" },
+    { id: 3, nom: "Table 3", statut: "libre" },
+    { id: 4, nom: "Table 4", statut: "libre" },
+    { id: 5, nom: "Table 5", statut: "libre" },
+    { id: 6, nom: "Table 6", statut: "libre" },
+    { id: 7, nom: "Terrasse 1", statut: "libre" },
+    { id: 8, nom: "Terrasse 2", statut: "libre" },
+    { id: 9, nom: "VIP", statut: "libre" }
+];
+
+// CHARGER DEPUIS LOCALSTORAGE
+let data = {
+    users: [
+        { username: "admin", password: "admin123", role: "Gérant" },
+        { username: "serveur", password: "1234", role: "Serveur" }
+    ],
+    menu: JSON.parse(localStorage.getItem('wr_menu')) || menuDefault,
+    tables: JSON.parse(localStorage.getItem('wr_tables')) || tablesDefault,
+    commandes: JSON.parse(localStorage.getItem('wr_commandes')) || [],
+    caisse: JSON.parse(localStorage.getItem('wr_caisse')) || [],
+    currentUser: null,
+    commandeEnCours: {},
+    platASupprimer: null
+};
+
+// SAUVEGARDER
+function sauvegarder() {
+    localStorage.setItem('wr_menu', JSON.stringify(data.menu));
+    localStorage.setItem('wr_tables', JSON.stringify(data.tables));
+    localStorage.setItem('wr_commandes', JSON.stringify(data.commandes));
+    localStorage.setItem('wr_caisse', JSON.stringify(data.caisse));
+}
+
+// SON (bip généré)
+function jouerSon() {
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.frequency.value = 800;
+        osc.type = 'sine';
+        gain.gain.setValueAtTime(0.3, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.3);
+        
+        // Deuxième note
+        setTimeout(() => {
+            const osc2 = ctx.createOscillator();
+            const gain2 = ctx.createGain();
+            osc2.connect(gain2);
+            gain2.connect(ctx.destination);
+            osc2.frequency.value = 1200;
+            osc2.type = 'sine';
+            gain2.gain.setValueAtTime(0.3, ctx.currentTime);
+            gain2.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+            osc2.start(ctx.currentTime);
+            osc2.stop(ctx.currentTime + 0.3);
+        }, 150);
+    } catch(e) { console.log('Son non disponible'); }
+}
+
+// NOTIFICATION
+function notifier(message, son = true) {
+    const notif = document.getElementById('notification');
+    document.getElementById('notifText').textContent = message;
+    notif.classList.add('show');
+    if (son) jouerSon();
+    setTimeout(() => notif.classList.remove('show'), 3000);
+}
+
+// LOGIN
+function login() {
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    const user = data.users.find(u => u.username === username && u.password === password);
+    if (user) {
+        data.currentUser = user;
+        document.getElementById('userName').textContent = "👤 " + user.role + " : " + user.username;
+        showScreen('dashboard');
+        chargerTout();
+    } else {
+        document.getElementById('loginError').textContent = "❌ Identifiants incorrects !";
+    }
+}
+
+function logout() {
+    data.currentUser = null;
+    document.getElementById('username').value = '';
+    document.getElementById('password').value = '';
+    document.getElementById('loginError').textContent = '';
+    showScreen('loginScreen');
+}
+
+function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+}
+
+function showTab(tabName, btn) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('tab-' + tabName).classList.add('active');
+    btn.classList.add('active');
+    if (tabName === 'stats') mettreAJourStats();
+}
+
+function chargerTout() {
+    afficherCommandes();
+    afficherMenu();
+    afficherTables();
+    afficherCaisse();
+    mettreAJourStats();
+}
+
+// NOUVELLE COMMANDE
+function nouvelleCommande() {
+    data.commandeEnCours = {};
+    const select = document.getElementById('tableCommande');
+    select.innerHTML = '<option value="">🪑 Choisir une table</option>';
+    data.tables.forEach(t => {
+        const opt = document.createElement('option');
+        opt.value = t.id;
+        opt.textContent = t.nom + (t.statut === 'occupee' ? ' 🔴 Occupée' : ' 🟢 Libre');
+        select.appendChild(opt);
+    });
+
+    const menuChoix = document.getElementById('menuChoix');
+    menuChoix.innerHTML = '';
+
+    // Grouper par catégorie
+    const categories = {};
+    data.menu.forEach(p => {
+        if (!categories[p.categorie]) categories[p.categorie] = [];
+        categories[p.categorie].push(p);
+    });
+
+    for (let cat in categories) {
+        const h4 = document.createElement('h4');
+        h4.style.cssText = 'color:#8B0000;margin:15px 0 8px;padding-bottom:5px;border-bottom:1px solid #D4AF37';
+        h4.textContent = cat;
+        menuChoix.appendChild(h4);
+
+        categories[cat].forEach(plat => {
+            const div = document.createElement('div');
+            div.className = 'menu-item-choix';
+            div.innerHTML = `
+                <div>
+                    <strong>${plat.emoji || '🍽️'} ${plat.nom}</strong><br>
+                    <small style="color:#8B0000;font-weight:bold">${plat.prix.toLocaleString()} FCFA</small>
+                </div>
+                <div class="controls">
+                    <button onclick="changerQte(${plat.id}, -1)">−</button>
+                    <span id="qte-${plat.id}">0</span>
+                    <button onclick="changerQte(${plat.id}, 1)">+</button>
+                </div>
+            `;
+            menuChoix.appendChild(div);
+        });
+    }
+
+    document.getElementById('totalCommande').textContent = '0';
+    ouvrirModal('modalCommande');
+}
+
+function changerQte(platId, delta) {
+    if (!data.commandeEnCours[platId]) data.commandeEnCours[platId] = 0;
+    data.commandeEnCours[platId] = Math.max(0, data.commandeEnCours[platId] + delta);
+    document.getElementById('qte-' + platId).textContent = data.commandeEnCours[platId];
+    calculerTotal();
+}
+
+function calculerTotal() {
+    let total = 0;
+    for (let platId in data.commandeEnCours) {
+        const qte = data.commandeEnCours[platId];
+        const plat = data.menu.find(p => p.id == platId);
+        if (plat && qte > 0) total += plat.prix * qte;
+    }
+    document.getElementById('totalCommande').textContent = total.toLocaleString();
+    return total;
+}
+
+function validerCommande() {
+    const tableId = document.getElementById('tableCommande').value;
+    if (!tableId) { alert('⚠️ Choisissez une table !'); return; }
+
+    const items = [];
+    for (let platId in data.commandeEnCours) {
+        const qte = data.commandeEnCours[platId];
+        const plat = data.menu.find(p => p.id == platId);
+        if (plat && qte > 0) items.push({ nom: plat.nom, prix: plat.prix, qte: qte });
+    }
+
+    if (items.length === 0) { alert('⚠️ Ajoutez au moins un plat !'); return; }
+
+    const total = calculerTotal();
+    const table = data.tables.find(t => t.id == tableId);
+
+    data.commandes.push({
+        id: Date.now(),
+        table: table.nom,
+        tableId: parseInt(tableId),
+        items: items,
+        total: total,
+        statut: 'en cours',
+        heure: new Date().toLocaleTimeString()
+    });
+
+    table.statut = 'occupee';
+    sauvegarder();
+    fermerModal('modalCommande');
+    afficherCommandes();
+    afficherTables();
+    notifier('✅ Commande enregistrée pour ' + table.nom);
+}
+
+function afficherCommandes() {
+    const liste = document.getElementById('listeCommandes');
+    const enCours = data.commandes.filter(c => c.statut !== 'payée');
+
+    if (enCours.length === 0) {
+        liste.innerHTML = '<div class="empty-state"><div class="icon">📭</div><p>Aucune commande en cours</p></div>';
+        return;
+    }
+
+    liste.innerHTML = '';
+    enCours.forEach(cmd => {
+        const div = document.createElement('div');
+        div.className = 'commande-card';
+        const itemsText = cmd.items.map(i => `${i.qte}x ${i.nom}`).join(', ');
+        div.innerHTML = `
+            <h4>🪑 ${cmd.table} <span class="badge">${cmd.statut}</span></h4>
+            <p style="color:#666;font-size:13px">⏰ ${cmd.heure}</p>
+            <p style="margin:8px 0">🍽️ ${itemsText}</p>
+            <p style="font-size:18px;color:#8B0000"><strong>💰 ${cmd.total.toLocaleString()} FCFA</strong></p>
+            <div class="commande-actions">
+                <button onclick="encaisser(${cmd.id})" style="background:#2E7D32;color:white">💰 Encaisser</button>
+                <button onclick="supprimerCommande(${cmd.id})" style="background:#C62828;color:white">🗑️ Annuler</button>
+            </div>
+        `;
+        liste.appendChild(div);
+    });
+}
+
+function encaisser(cmdId) {
+    const cmd = data.commandes.find(c => c.id === cmdId);
+    if (!cmd) return;
+    if (confirm(`💰 Encaisser ${cmd.total.toLocaleString()} FCFA pour ${cmd.table} ?`)) {
+        cmd.statut = 'payée';
+        const table = data.tables.find(t => t.id == cmd.tableId);
+        if (table) table.statut = 'libre';
+        data.caisse.push({ table: cmd.table, total: cmd.total, heure: new Date().toLocaleTimeString() });
+        sauvegarder();
+        afficherCommandes();
+        afficherTables();
+        afficherCaisse();
+        mettreAJourStats();
+        notifier('✅ Paiement : ' + cmd.total.toLocaleString() + ' FCFA');
+    }
+}
+
+function supprimerCommande(cmdId) {
+    if (confirm('❌ Annuler cette commande ?')) {
+        const cmd = data.commandes.find(c => c.id === cmdId);
+        if (cmd) {
+            const table = data.tables.find(t => t.id == cmd.tableId);
+            if (table) table.statut = 'libre';
+        }
+        data.commandes = data.commandes.filter(c => c.id !== cmdId);
+        sauvegarder();
+        afficherCommandes();
+        afficherTables();
+    }
+}
+
+// MENU
+function afficherMenu() {
+    const liste = document.getElementById('listeMenu');
+    if (data.menu.length === 0) {
+        liste.innerHTML = '<div class="empty-state"><div class="icon">🍽️</div><p>Aucun plat dans le menu</p></div>';
+        return;
+    }
+
+    const categories = {};
+    data.menu.forEach(p => {
+        if (!categories[p.categorie]) categories[p.categorie] = [];
+        categories[p.categorie].push(p);
+    });
+
+    const icones = {
+        'Entrée': '🥗', 'Plat principal': '🍛', 'Dessert': '🍰',
+        'Boisson': '🥤', 'Eau': '💧', 'Alcool': '🍷'
+    };
+
+    liste.innerHTML = '';
+    for (let cat in categories) {
+        const section = document.createElement('div');
+        section.className = 'categorie-section';
+        let html = `<div class="categorie-title">${icones[cat] || '🍽️'} ${cat} (${categories[cat].length})</div><div class="menu-grid">`;
+        categories[cat].forEach(plat => {
+            html += `
+                <div class="plat-card">
+                    <div class="plat-emoji">${plat.emoji || '🍽️'}</div>
+                    <div class="plat-nom">${plat.nom}</div>
+                    <div class="plat-prix">${plat.prix.toLocaleString()} FCFA</div>
+                    <div class="plat-actions">
+                        <button class="btn-delete" onclick="demanderSuppression(${plat.id})">🗑️ Supprimer</button>
+                    </div>
+                </div>
+            `;
+        });
+        html += '</div>';
+        section.innerHTML = html;
+        liste.appendChild(section);
+    }
+}
+
+function ajouterPlat() {
+    document.getElementById('nomPlat').value = '';
+    document.getElementById('prixPlat').value = '';
+    document.getElementById('emojiPlat').value = '';
+    ouvrirModal('modalPlat');
+}
+
+function validerPlat() {
+    const nom = document.getElementById('nomPlat').value.trim();
+    const prix = parseInt(document.getElementById('prixPlat').value);
+    const categorie = document.getElementById('categoriePlat').value;
+    const emoji = document.getElementById('emojiPlat').value.trim() || '🍽️';
+
+    if (!nom) { alert('⚠️ Entrez le nom du plat !'); return; }
+    if (!prix || prix <= 0) { alert('⚠️ Entrez un prix valide !'); return; }
+
+    data.menu.push({ id: Date.now(), nom, prix, categorie, emoji });
+    sauvegarder();
+    fermerModal('modalPlat');
+    afficherMenu();
+    mettreAJourStats();
+    notifier('✅ Nouveau plat ajouté : ' + nom);
+}
+
+// SUPPRESSION ADMIN UNIQUEMENT
+function demanderSuppression(platId) {
+    data.platASupprimer = platId;
+    document.getElementById('adminPassword').value = '';
+    ouvrirModal('modalAdmin');
+}
+
+function confirmerSuppression() {
+    const password = document.getElementById('adminPassword').value;
+    const admin = data.users.find(u => u.role === "Gérant");
+    
+    if (password !== admin.password) {
+        alert('❌ Mot de passe administrateur incorrect !');
+        return;
+    }
+    
+    const plat = data.menu.find(p => p.id === data.platASupprimer);
+    if (plat) {
+        data.menu = data.menu.filter(p => p.id !== data.platASupprimer);
+        sauvegarder();
+        fermerModal('modalAdmin');
+        afficherMenu();
+        mettreAJourStats();
+        notifier('🗑️ Supprimé : ' + plat.nom, false);
+    }
+}
+
+// TABLES
+function afficherTables() {
+    const liste = document.getElementById('listeTables');
+    liste.innerHTML = '';
+    data.tables.forEach(table => {
+        const div = document.createElement('div');
+        div.className = 'table-card ' + table.statut;
+        div.innerHTML = `
+            <div class="table-icon">${table.statut === 'libre' ? '🟢' : '🔴'}</div>
+            <strong>${table.nom}</strong>
+            <p style="font-size:12px;margin-top:5px;color:#666">${table.statut === 'libre' ? 'Disponible' : 'Occupée'}</p>
+        `;
+        liste.appendChild(div);
+    });
+}
+
+// CAISSE
+function afficherCaisse() {
+    const liste = document.getElementById('listeCaisse');
+    const total = data.caisse.reduce((sum, c) => sum + c.total, 0);
+    document.getElementById('totalJour').textContent = total.toLocaleString() + ' FCFA';
+
+    if (data.caisse.length === 0) {
+        liste.innerHTML = '<div class="empty-state"><div class="icon">💰</div><p>Aucune transaction aujourd\'hui</p></div>';
+        return;
+    }
+
+    liste.innerHTML = '';
+    data.caisse.slice().reverse().forEach(c => {
+        const div = document.createElement('div');
+        div.className = 'caisse-card';
+        div.innerHTML = `
+            <span>🪑 <strong>${c.table}</strong> - ⏰ ${c.heure}</span>
+            <strong style="color:#2E7D32;font-size:16px">${c.total.toLocaleString()} FCFA</strong>
+        `;
+        liste.appendChild(div);
+    });
+}
+
+function mettreAJourStats() {
+    const totalJour = data.caisse.reduce((sum, c) => sum + c.total, 0);
+    const tablesOccupees = data.tables.filter(t => t.statut === 'occupee').length;
+    document.getElementById('statCommandes').textContent = data.commandes.filter(c => c.statut === 'payée').length;
+    document.getElementById('statRecette').textContent = totalJour.toLocaleString() + ' FCFA';
+    document.getElementById('statTables').textContent = tablesOccupees;
+    document.getElementById('statPlats').textContent = data.menu.length;
+}
+
+function ouvrirModal(id) { document.getElementById(id).style.display = 'block'; }
+function fermerModal(id) { document.getElementById(id).style.display = 'none'; }
+
+document.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter' && document.getElementById('loginScreen').classList.contains('active')) {
+        login();
+    }
+});
+</script>
+</body>
+</html>
